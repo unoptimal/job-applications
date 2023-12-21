@@ -7,28 +7,33 @@ app.use(express.json());
 app.post('/api/sendEmail', async (req, res) => {
   const { name, email } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.mailtrap.io',
-    port: 2525,
-    auth: {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.mailtrap.io',
+      port: 2525,
+      auth: {
         user: process.env.MAILTRAP_USER,
         pass: process.env.MAILTRAP_PASS,
-    },
-  });
-
-  try {
+      },
+    });
+  
     await transporter.sendMail({
       from: 'justinmguo0@gmail.com',
       to: email,
       subject: 'Form Submission',
       text: `Thank you for submitting the form with name: ${name}.`,
     });
-
+  
     res.status(200).send('Email sent successfully');
   } catch (error) {
     console.error('Error sending email:', error);
-    res.status(500).send('Error sending email');
+    if (error.code === 'SMTP_CONNECT_FAILED') {
+      res.status(500).send('Error connecting to mail server');
+    } else {
+      res.status(500).send('Error sending email');
+    }
   }
+  
 });
 
 const PORT = process.env.PORT || 3000;
