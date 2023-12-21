@@ -11,9 +11,11 @@ const FormComponent = () => {
       name,
       email,
     };
+
+    console.log('Form data submitted:', formData);
   
     try {
-      const response = await fetch('https://www.applyingtojobs.lol/api/sendEmail', {
+      const response = await fetch('http://applyingtojobs.lol/api/sendEmail', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
